@@ -97,38 +97,29 @@ export class TicTacToeComponent {
   }
 
   public isWinning(): string{
-    // check first row
-    if(this.board[0][0] == 'X' && this.board[0][1] == 'X' && this.board[0][2] == "X") return 'X';
-    if(this.board[0][0] == 'O' && this.board[0][1] == 'O' && this.board[0][2] == "O") return 'Y';
-
-    // check second row
-    if(this.board[1][0] == 'X' && this.board[1][1] == 'X' && this.board[1][2] == "X") return 'X';
-    if(this.board[1][0] == 'O' && this.board[1][1] == 'O' && this.board[1][2] == "O") return 'Y';
-
-    // check third row
-    if(this.board[2][0] == 'X' && this.board[2][1] == 'X' && this.board[2][2] == "X") return 'X';
-    if(this.board[2][0] == 'O' && this.board[2][1] == 'O' && this.board[2][2] == "O") return 'Y';
-
-    // check first column
-    if(this.board[0][0] == 'X' && this.board[1][0] == 'X' && this.board[2][0] == "X") return 'X';
-    if(this.board[0][0] == 'O' && this.board[1][0] == 'O' && this.board[2][0] == "O") return 'Y';
-
-    // check second column
-    if(this.board[0][1] == 'X' && this.board[1][1] == 'X' && this.board[2][1] == "X") return 'X';
-    if(this.board[0][1] == 'O' && this.board[1][1] == 'O' && this.board[2][1] == "O") return 'Y';
-
-    // check 3rd column
-    if(this.board[0][2] == 'X' && this.board[1][2] == 'X' && this.board[2][2] == "X") return 'X';
-    if(this.board[0][2] == 'O' && this.board[1][2] == 'O' && this.board[2][2] == "O") return 'Y';
-
-    // check diagonal column
-    if(this.board[0][0] == 'X' && this.board[1][1] == 'X' && this.board[2][2] == "X") return 'X';
-    if(this.board[0][2] == 'O' && this.board[1][1] == 'O' && this.board[2][2] == "O") return 'Y';
-
-    // check other diagonal column
-    if(this.board[0][2] == 'X' && this.board[1][1] == 'X' && this.board[0][2] == "X") return 'X';
-    if(this.board[0][2] == 'O' && this.board[1][1] == 'O' && this.board[0][2] == "O") return 'Y';
-    return null;
+    const winningGrid = [
+      [{r: 0, c: 0}, {r: 0, c: 1}, {r: 0, c: 2}],
+      [{r: 1, c: 0}, {r: 1, c: 1}, {r: 1, c: 2}],
+      [{r: 2, c: 0}, {r: 2, c: 1}, {r: 2, c: 2}],
+      [{r: 0, c: 0}, {r: 1, c: 0}, {r: 2, c: 0}],
+      [{r: 0, c: 1}, {r: 1, c: 1}, {r: 2, c: 1}],
+      [{r: 0, c: 2}, {r: 1, c: 2}, {r: 2, c: 2}],
+      [{r: 0, c: 0}, {r: 1, c: 1}, {r: 2, c: 2}],
+      [{r: 0, c: 2}, {r: 1, c: 1}, {r: 2, c: 0}]
+    ]
+    let retval = null;
+    for(let i=0; i<winningGrid.length; i++){
+      let grid = winningGrid[i];
+      let x = grid[0];
+      const move = this.board[x.r][x.c];
+      if(!move) continue;
+      let y = grid[1];
+      let z = grid[2];
+      if(move === this.board[y.r][y.c] && move === this.board[z.r][z.c]){
+        retval = move;
+        break;
+      }
+    }
+    return retval;
   }
 }
-
