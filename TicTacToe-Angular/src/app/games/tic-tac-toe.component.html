@@ -1,0 +1,35 @@
+﻿<h1 id="tableLabel">
+  Tic Tac Toe
+  <span style="padding-left: 20%;" *ngIf="moveValid() && !isWinning()">Your Move!</span>
+  <span style="padding-left: 20%;" *ngIf="isWinning() && isWinning() == move">You won!!!</span>
+  <span style="padding-left: 20%;" *ngIf="isWinning() && isWinning() != move">You lost...</span>
+</h1>
+<p *ngIf="!hasEnteredUsername">
+  <label>Please enter your username</label>
+  <input type="text" [(ngModel)]="username">
+  <input type="button" (click)="lookForOpponent(username)" value="Search for opponent" />
+</p>
+<p *ngIf="hasEnteredUsername && opponent == null">
+  Searching for oppenent...
+</p>
+<div *ngIf="gameId">
+  <p>You're playing as {{ username }} ({{ move }})</p>
+  <p>You're opponent is {{ opponent }}</p>
+  <table>
+    <tr>
+      <td (click)="setMove(0,0)" [ngStyle]="getCharacterColor(0,0)"> {{ board[0][0] }} </td>
+      <td class="vert" (click)="setMove(0,1)" [ngStyle]="getCharacterColor(0,1)"> {{ board[0][1] }}</td>
+      <td (click)="setMove(0,2)" [ngStyle]="getCharacterColor(0,2)">{{ board[0][2] }}</td>
+    </tr>
+    <tr>
+      <td class="hori" (click)="setMove(1,0)" [ngStyle]="getCharacterColor(1,0)">{{ board[1][0] }}</td>
+      <td class="vert hori" (click)="setMove(1,1)" [ngStyle]="getCharacterColor(1,1)">{{ board[1][1] }}</td>
+      <td class="hori" (click)="setMove(1,2)" [ngStyle]="getCharacterColor(1,2)">{{ board[1][2] }}</td>
+    </tr>
+    <tr>
+      <td (click)="setMove(2,0)" [ngStyle]="getCharacterColor(2,0)">{{ board[2][0] }}</td>
+      <td class="vert" (click)="setMove(2,1)" [ngStyle]="getCharacterColor(2,1)">{{ board[2][1] }}</td>
+      <td (click)="setMove(2,2)" [ngStyle]="getCharacterColor(2,2)">{{ board[2][2] }}</td>
+    </tr>
+  </table>
+</div>
