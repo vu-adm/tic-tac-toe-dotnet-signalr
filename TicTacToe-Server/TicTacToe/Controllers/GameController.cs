@@ -58,9 +58,10 @@ namespace TicTacToe.Controllers {
 				var game = _gameSvc.GetGame(gameId);
 				if (!string.IsNullOrEmpty(game.IsWinning())) {
 					_gameSvc.DeleteGame(game.Id);
+				} else {
+					var opponent = game.Opponents.First(x => x != username);
+					_gameHub.Clients.User(opponent).SendAsync("quit-game");
 				}
-				var opponent = game.Opponents.First(x => x != username);
-				_gameHub.Clients.User(opponent).SendAsync("update-game", board);
 				return Accepted();
 			} catch (Exception ex) {
 				return StatusCode(500, ex.Message);

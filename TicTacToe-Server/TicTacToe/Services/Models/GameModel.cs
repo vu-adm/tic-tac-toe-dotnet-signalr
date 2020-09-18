@@ -20,8 +20,7 @@ namespace TicTacToe.Services.Models {
 			};
 
 			string retval = null;
-			for (var i = 0; i < winningGrid.Count; i++) {
-				var grid = winningGrid[i];
+			foreach (var grid in winningGrid) {
 				var x = grid[0];
 				var move = Board[x.r][x.c];
 				if (string.IsNullOrEmpty(move)) continue;
