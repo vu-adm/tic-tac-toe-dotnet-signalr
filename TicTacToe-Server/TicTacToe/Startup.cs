@@ -27,6 +27,7 @@ namespace TicTacToe {
 			services.AddControllers();
 			services.AddSignalR();
 			services.AddScoped<IGameService, InMemoryGameServiceImpl>();
+			services.AddScoped<IGameHub, GameHub>();
 			services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 		}
 

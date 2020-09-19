@@ -21,12 +21,13 @@ export class TicTacToeService {
         return this.http.put<any>(`${this.baseUrl}/move/${username}/${gameId}`, board);
     }
 
-    test(username: string) :Observable<string> {
-        return this.http.get<string>(`${this.baseUrl}/test/${username}`);
+    quit(username: string, gameId: string) :Observable<any> {
+        return this.http.post<any>(`${this.baseUrl}/quit/${username}/${gameId}`, null);
     }
 }
 
 interface Game {
     id: string,
-    opponents: string[]
+    opponents: string[],
+    board: string[][]
 }

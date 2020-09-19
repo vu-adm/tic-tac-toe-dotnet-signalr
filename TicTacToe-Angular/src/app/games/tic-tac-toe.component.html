@@ -1,8 +1,11 @@
 ﻿<h1 id="tableLabel">
   Tic Tac Toe
-  <span style="padding-left: 20%;" *ngIf="moveValid() && !isWinning()">Your Move!</span>
-  <span style="padding-left: 20%;" *ngIf="isWinning() && isWinning() == move">You won!!!</span>
-  <span style="padding-left: 20%;" *ngIf="isWinning() && isWinning() != move">You lost...</span>
+  <span *ngIf="gameId">
+    <span style="padding-left: 20%;" *ngIf="moveValid() && !isWinning()">Your Move!</span>
+    <span style="padding-left: 20%;" *ngIf="!moveValid() && !isWinning()">Opponents turn...</span>
+    <span style="padding-left: 20%;" *ngIf="isWinning() && isWinning() == move">You won!!!</span>
+    <span style="padding-left: 20%;" *ngIf="isWinning() && isWinning() != move">You lost...</span>
+  </span>
 </h1>
 <p *ngIf="!hasEnteredUsername">
   <label>Please enter your username</label>
@@ -10,7 +13,7 @@
   <input type="button" (click)="lookForOpponent(username)" value="Search for opponent" />
 </p>
 <p *ngIf="hasEnteredUsername && opponent == null">
-  Searching for oppenent...
+  Searching for opponent...
 </p>
 <div *ngIf="gameId">
   <p>You're playing as {{ username }} ({{ move }})</p>

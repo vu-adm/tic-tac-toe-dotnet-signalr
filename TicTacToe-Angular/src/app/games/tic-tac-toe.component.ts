@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+﻿import { Component, HostListener, OnDestroy } from '@angular/core';
 import { TicTacToeService } from '../services/tic-tac-toe.service';
 import { SignalRService } from '../services/signal-r.service';
 
@@ -7,7 +7,7 @@ import { SignalRService } from '../services/signal-r.service';
   templateUrl: './tic-tac-toe.component.html',
   styleUrls: ['./tic-tac-toe.component.css']
 })
-export class TicTacToeComponent {
+export class TicTacToeComponent implements OnDestroy {
   public gameId: string;
   public username: string;
   public opponent: string;
@@ -15,12 +15,8 @@ export class TicTacToeComponent {
   public board: string[][];
   public move: string
 
-  constructor(private ticTacToeService: TicTacToeService, public signalRService: SignalRService) {
-    this.board = [
-      [],
-      [],
-      []
-    ];
+  constructor(private ticTacToeService: TicTacToeService, public signalRService: SignalRService) {  
+    this.board = [[]];
   }
 
   public lookForOpponent(username: string) {
@@ -31,6 +27,7 @@ export class TicTacToeComponent {
           this.signalRService.hubConnection.on("start-game", response => {
             this.gameId = response.id;
             this.opponent = response.opponents[0];
+            this.board = response.board;
             this.move = 'O';
             this.listenForUpdate();
           });
@@ -38,6 +35,7 @@ export class TicTacToeComponent {
           this.gameId = data.id;
           this.opponent = data.opponents[1];
           this.move = 'X';
+          this.board = data.board;
           this.listenForUpdate();
         }
       });
@@ -48,13 +46,19 @@ export class TicTacToeComponent {
     this.signalRService.hubConnection.on("update-game", response => {
       this.board = response;
     });
+    this.signalRService.hubConnection.on('quit-game', _ => { 
+      this.gameId = null;
+      this.opponent = null;
+      this.lookForOpponent(this.username);
+    });
   }
 
-  public setMove(i, j){
+  public setMove(i: number, j: number){
     let winner = this.isWinning();
     if(winner){
-      if(winner == this.move) alert("You won!")
-      else alert('You lost...')
+      if(winner == this.move) alert("You won!");
+      else alert('You lost...');
+      return;
     }
     if(!this.moveValid()){
       alert('Not your move');
@@ -121,5 +125,18 @@ export class TicTacToeComponent {
       }
     }
     return retval;
+  }
+
+  ngOnDestroy(){
+    this.handleDestroy();
+  }
+
+  @HostListener('window:beforeunload', [ '$event' ])
+  beforeUnloadHandler(_) {
+    this.handleDestroy();
+  }
+
+  handleDestroy(){
+      this.ticTacToeService.quit(this.username, this.gameId).subscribe();
   }
 }

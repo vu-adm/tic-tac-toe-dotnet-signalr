@@ -3,9 +3,18 @@ using System.Collections.Generic;
 
 namespace TicTacToe.Services.Models {
 	public class GameModel {
+
+		public GameModel() {
+			Board = new List<string[]> {
+							new string[3],
+							new string[3],
+							new string[3]
+			};
+		}
+
 		public string Id { get; set; }
 		public List<string> Opponents { get; set; }
-		public List<List<string>> Board { get; set; }
+		public List<string[]> Board { get; set; }
 
 		internal string IsWinning() {
 			var winningGrid = new List<List<(int r, int c)>> {

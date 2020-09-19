@@ -6,7 +6,8 @@ namespace TicTacToe.Services {
 		GameModel SearchForOpponent(string username);
 		GameModel GetGame(string id);
 		void AddToQueue(string username);
-		void UpdateBoard(string id, List<List<string>> board);
+		void RemoveFromQueue(string username);
+		void UpdateBoard(string id, List<string[]> board);
 		void DeleteGame(string id);
 	}
 }

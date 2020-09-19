@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using TicTacToe.Services;
 
 namespace TicTacToe.Controllers {
 	[Route("api/[controller]")]
 	[ApiController]
 	public class GameController : ControllerBase {
-		private readonly IHubContext<GameHub> _gameHub;
+		private readonly IGameHub _gameHub;
 		private readonly IGameService _gameSvc;
 
-		public GameController(IHubContext<GameHub> gameHub, IGameService gameSvc) {
+		public GameController(IGameHub gameHub, IGameService gameSvc) {
 			_gameHub = gameHub;
 			_gameSvc = gameSvc;
 		}
@@ -23,7 +23,7 @@ namespace TicTacToe.Controllers {
 		}
 
 		[HttpGet("start/{username}")]
-		public IActionResult StartGame(string username) {
+		public async Task<IActionResult> StartGame(string username) {
 			try {
 				var game = _gameSvc.SearchForOpponent(username);
 				if (game == null) {
@@ -32,7 +32,7 @@ namespace TicTacToe.Controllers {
 				}
 
 				var opponent = game.Opponents.First(x => x != username);
-				_gameHub.Clients.User(opponent).SendAsync("start-game", game);
+				await _gameHub.SendGameStartAsync(opponent, game);
 				return Ok(game);
 			} catch (Exception ex) {
 				return StatusCode(500, ex.Message);
@@ -40,12 +40,12 @@ namespace TicTacToe.Controllers {
 		}
 
 		[HttpPut("move/{username}/{gameId}")]
-		public IActionResult UpdateMove(string username, string gameId, [FromBody] List<List<string>> board) {
+		public async Task<IActionResult> UpdateMove(string username, string gameId, [FromBody] List<string[]> board) {
 			try {
 				var game = _gameSvc.GetGame(gameId);
 				_gameSvc.UpdateBoard(game.Id, board);
 				var opponent = game.Opponents.First(x => x != username);
-				_gameHub.Clients.User(opponent).SendAsync("update-game", board);
+				await _gameHub.SendGameUpdateAsync(opponent, board);
 				return Accepted();
 			} catch (Exception ex) {
 				return StatusCode(500, ex.Message);
@@ -53,15 +53,14 @@ namespace TicTacToe.Controllers {
 		}
 
 		[HttpPost("quit/{username}/{gameId}")]
-		public IActionResult QuitGame(string username, string gameId) {
+		public async Task<IActionResult> QuitGame(string username, string gameId) {
 			try {
+				_gameSvc.RemoveFromQueue(username);
 				var game = _gameSvc.GetGame(gameId);
-				if (!string.IsNullOrEmpty(game.IsWinning())) {
-					_gameSvc.DeleteGame(game.Id);
-				} else {
-					var opponent = game.Opponents.First(x => x != username);
-					_gameHub.Clients.User(opponent).SendAsync("quit-game");
-				}
+				if (game == null) return Accepted();
+				_gameSvc.DeleteGame(game.Id);
+				var opponent = game.Opponents.First(x => x != username);
+				await _gameHub.SendGameQuitAsync(opponent);
 				return Accepted();
 			} catch (Exception ex) {
 				return StatusCode(500, ex.Message);

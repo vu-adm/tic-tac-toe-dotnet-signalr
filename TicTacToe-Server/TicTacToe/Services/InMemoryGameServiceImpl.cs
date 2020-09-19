@@ -36,7 +36,9 @@ namespace TicTacToe.Services {
 
 		public void AddToQueue(string username) => _QUEUE.Add(username);
 
-		public void UpdateBoard(string id, List<List<string>> board) {
+		public void RemoveFromQueue(string username) => _QUEUE.Remove(username);
+
+		public void UpdateBoard(string id, List<string[]> board) {
 			lock (_sync) {
 				if (!_CURRENT_GAMES.TryGetValue(id, out var game)) return;
 				game.Board = board;
