@@ -17,7 +17,7 @@ export default class ApiService {
 			updateMove: (username, gameId, board) => {
 				return this.http.put(`${this.baseUrl}/move/${username}/${gameId}`, board);
 			},
-			quiteGame: (username, gameId) => {
+			quitGame: (username, gameId) => {
 				return this.http.post(`${this.baseUrl}/quit/${username}/${gameId}`);
 			}
 		};

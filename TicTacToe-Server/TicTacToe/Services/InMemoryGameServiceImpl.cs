@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using TicTacToe.Services.Models;
 
 namespace TicTacToe.Services {
@@ -15,6 +16,7 @@ namespace TicTacToe.Services {
 				if (string.IsNullOrEmpty(opponent))
 					return null;
 				if (opponent.Equals(username)) throw new Exception("Username already in queue");
+				if (_CURRENT_GAMES.Values.Any(x => x.Opponents.Contains(username))) throw new Exception("User already playing game");
 				var newGame = new GameModel {
 								Id = Guid.NewGuid().ToString(),
 								Opponents = new List<string> { username, opponent }

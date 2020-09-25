@@ -18,7 +18,6 @@ export default class SignalRService {
 			listenForGameStart: (callback) => {
 				console.log('waiting for game');
 				this.hubConnection.on('start-game', response => {
-					console.log(response);
 					callback(response, 'O');
 				});
 			},
@@ -26,7 +25,6 @@ export default class SignalRService {
 			listenForUpdate: (callback) => {
 				console.log('update move');
 				this.hubConnection.on('update-game', response => {
-					console.log(response);
 					callback(response);
 				});
 			},

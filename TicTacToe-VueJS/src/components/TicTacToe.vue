@@ -3,16 +3,16 @@
 		<h1 id="tableLabel">
 			Tic Tac Toe
 			<span v-if="gameId">
-				<span style="padding-left: 20%" v-if="moveValid() && !isWinning()">
+				<span style="padding-left: 20%" v-if="moveValid && !isWinning">
 					Your Move!
 				</span>
-				<span style="padding-left: 20%" v-if="!moveValid() && !isWinning()">
+				<span style="padding-left: 20%" v-if="!moveValid && !isWinning">
 					Opponents turn...
 				</span>
-				<span style="padding-left: 20%" v-if="moveValid() && isWinning() == move">
+				<span style="padding-left: 20%" v-if="isWinning && isWinning == move">
 					You won!!!
 				</span>
-				<span style="padding-left: 20%" v-if="moveValid() && isWinning() != move">
+				<span style="padding-left: 20%" v-if="isWinning && isWinning != move">
 					You lost...
 				</span>
 			</span>
@@ -107,67 +107,7 @@ export default {
 		};
 	},
 	computed: {
-
-	},
-	methods: {
-		async lookForOpponent() {
-			try {
-				this.hub.startConnection(this.username);
-				const { data } = await this.api.lookForOpponent(this.username);
-				if(!data){
-					this.hub.listenForGameStart(this.startGameCallback);
-				} else {
-					this.startGameCallback(data, 'X');
-				}
-			} catch {
-				console.log('error occured');
-			}
-			this.hasEnteredUsername = true;
-		},
-		startGameCallback(game, move) {
-			this.gameId = game.id;
-			this.board = game.board;
-			this.move = move;
-
-			if(move == 'X')
-				this.opponent = game.opponents[1];
-			else
-				this.opponent = game.opponents[0];
-
-			this.listenForUpdate();
-		},
-		listenForUpdate(){
-			this.hub.listenForUpdate((board) => {
-				this.board = board;
-			});
-			this.hub.listenForQuit(() => {
-				this.gameId = null;
-				this.opponent = null;
-				this.lookForOpponent(this.username);
-			});
-		},
-		getCharacterColor(i, j) {
-			if (this.board[i][j] == 'X') return { color: 'red' };
-			if (this.board[i][j] == 'O') return { color: 'blue' };
-			return {};
-		},
-		async setMove(i, j) {
-			let winner = this.isWinning();
-			if(winner){
-				if(winner == this.move) alert('You won!');
-				else alert('You lost...');
-				return;
-			}
-			if(!this.moveValid()){
-				alert('Not your move');
-			} else if(this.board[i][j]) {
-				alert('Position already taken');
-			} else {
-				this.board[i].splice(j, 1, this.move);
-				await this.api.updateMove(this.username, this.gameId, this.board);
-			}
-		},
-		moveValid() {
+		moveValid: function() {
 			let xCount = 0,
 				oCount = 0;
 			for (let i = 0; i < this.board.length; i++) {
@@ -195,7 +135,7 @@ export default {
 
 			return false;
 		},
-		isWinning() {
+		isWinning: function() {
 			const winningGrid = [
 				[
 					{ r: 0, c: 0 },
@@ -255,16 +195,74 @@ export default {
 				}
 			}
 			return retval;
+		}
+	},
+	methods: {
+		async lookForOpponent() {
+			try {
+				this.hub.startConnection(this.username);
+				const { data } = await this.api.lookForOpponent(this.username);
+				if(!data){
+					this.hub.listenForGameStart(this.startGameCallback);
+				} else {
+					this.startGameCallback(data, 'X');
+				}
+			} catch(err) {
+				console.log(err);
+			}
+			this.hasEnteredUsername = true;
+		},
+		startGameCallback(game, move) {
+			this.gameId = game.id;
+			this.board = game.board;
+			this.move = move;
+
+			if(move == 'X')
+				this.opponent = game.opponents[1];
+			else
+				this.opponent = game.opponents[0];
+
+			this.listenForUpdate();
+		},
+		listenForUpdate(){
+			this.hub.listenForUpdate((board) => {
+				this.board = board;
+			});
+			this.hub.listenForQuit(() => {
+				this.gameId = '';
+				this.opponent = '';
+				this.lookForOpponent(this.username);
+			});
+		},
+		async setMove(i, j) {
+			if(this.isWinning){
+				if(this.isWinning == this.move) alert('You won!');
+				else alert('You lost...');
+				return;
+			}
+			if(!this.moveValid){
+				alert('Not your move');
+			} else if(this.board[i][j]) {
+				alert('Position already taken');
+			} else {
+				this.board[i].splice(j, 1, this.move);
+				await this.api.updateMove(this.username, this.gameId, this.board);
+			}
 		},
 		async quitGame(){
 			await this.api.quitGame(this.username, this.gameId);
+		},
+		getCharacterColor: function(i, j) {
+			if (this.board[i][j] == 'X') return { color: 'red' };
+			if (this.board[i][j] == 'O') return { color: 'blue' };
+			return {};
 		}
 	},
-	created() {
+	async created() {
 		this.api = new ApiService().gameApi();
 		this.hub = new SignalRService().hub();
 		window.addEventListener('beforeunload', this.quitGame);
-	},
+	}
 };
 </script>
 
