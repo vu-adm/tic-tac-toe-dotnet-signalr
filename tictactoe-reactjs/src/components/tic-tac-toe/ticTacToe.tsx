@@ -50,7 +50,7 @@ export class TicTacToe extends React.Component {
             move: move
         });
 
-        if(move == 'X')
+        if(move === 'X')
             this.setState({
                 opponent: game.opponents[1]
             });
@@ -80,7 +80,7 @@ export class TicTacToe extends React.Component {
     setMove = async (i: number, j: number) => {
         let winning = this.isWinning();
         if(winning){
-            if(winning == this.state.move) alert('You won!');
+            if(winning === this.state.move) alert('You won!');
             else alert('You lost...');
             return;
         }
@@ -104,8 +104,8 @@ export class TicTacToe extends React.Component {
     }
 
     getCharacterColor(i: number, j: number) {
-        if (this.state.board[i][j] == 'X') return { color: 'red' };
-        if (this.state.board[i][j] == 'O') return { color: 'blue' };
+        if (this.state.board[i][j] === 'X') return { color: 'red' };
+        if (this.state.board[i][j] === 'O') return { color: 'blue' };
         return {};
     }
 
@@ -114,21 +114,21 @@ export class TicTacToe extends React.Component {
         for(let i =0; i < board.length; i++){
           let row = board[i];
           for(let j =0; j<row.length; j++){
-            if(row[j] == 'X') xCount++;
-            if(row[j] == 'O') oCount++;
+            if(row[j] === 'X') xCount++;
+            if(row[j] === 'O') oCount++;
           }
         }
         // x goes first
-        if(oCount%2 == 0 && xCount%2 == 0 && this.state.move == 'X') return true;
+        if(oCount%2 === 0 && xCount%2 === 0 && this.state.move === 'X') return true;
 
         // o goes next
-        if(oCount%2 == 0 && xCount%2 == 1 && this.state.move == 'O') return true;
+        if(oCount%2 === 0 && xCount%2 === 1 && this.state.move === 'O') return true;
 
         // then x goes again
-        if(oCount%2 == 1 && xCount%2 == 1 && this.state.move == 'X') return true;
+        if(oCount%2 === 1 && xCount%2 === 1 && this.state.move === 'X') return true;
 
         // then x goes again
-        if(oCount%2 == 1 && xCount%2 == 0 && this.state.move == 'O') return true;
+        if(oCount%2 === 1 && xCount%2 === 0 && this.state.move === 'O') return true;
 
         return false;
       }
@@ -185,12 +185,12 @@ export class TicTacToe extends React.Component {
                                 Opponents turn...
                             </span>
                          }
-                         { isWinning && isWinning == move &&
+                         { isWinning && isWinning === move &&
                             <span>
                                 You won!!!
                             </span>
                          }
-                          { isWinning && isWinning != move &&
+                          { isWinning && isWinning !== move &&
                             <span>
                                 You lost...
                             </span>
@@ -205,7 +205,7 @@ export class TicTacToe extends React.Component {
                     <input type="button" onClick={this.lookForOpponent} value="Search for opponent"/>
                     </p>
                 }
-                { hasEnteredUsername && opponent == '' &&
+                { hasEnteredUsername && opponent === '' &&
                     <p>
                         Searching for opponent...
                     </p>
